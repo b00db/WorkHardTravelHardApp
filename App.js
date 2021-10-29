@@ -1,14 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInut } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { theme } from './colors';
 
 export default function App() {
   const [working, setWoriking] = useState(true);
   const [text, setText] = useState("");
+  const [toDos, setToDos] = useState({});
   const travel = () => setWoriking(false);
   const work = () => setWoriking(true);
   const onChangeText = (payload) => setText(payload);
+  const addToDo = () => {
+    if(text === "") {
+      return;
+    }
+    /* const newToDos = Object.assign(
+      {}, 
+      toDos, 
+      {[Data.now()]:{text, work:working}}); */
+    const newToDos = {
+      ...toDos,
+      [Data.now()]:{text, work:working}
+    };
+    setToDos(newToDos);
+    setText("");
+  }
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -22,12 +38,21 @@ export default function App() {
       </View>
       <View>
         <TextInput
+          onSubmintEditing={addToDo}
           onChangeText={onChangeText}
+          returnKeyType="done"
           value={text}
           placeholder={working ? "Add a To Do" : "Where do you want to go?"}
           style={styles.input}
         />
       </View>
+      <ScrollView>
+        {Object.keys(toDos).map((key) => (
+          <View style={styles.toDo} key={key}>
+            <Text style={styles.toDoText}>{toDos[key].text}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -53,7 +78,19 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 30,
-    marginTop: 20,
+    marginVertical: 20,
     fontSize: 18,
+  },
+  toDo: {
+    backgroundColor: theme.grey,
+    marginBottom: 10,
+    paddingVertical: 20,
+    paddingVertical: 20,
+    borderRadius: 15,
+  },
+  toDoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
